@@ -166,22 +166,12 @@
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       document.body.appendChild(renderer.domElement);
 
+      // Env map only (for metal IBL + diamond sparkle). No ambient / directional / spot lights.
       const env = studioEnv();
       const pmrem = new THREE.PMREMGenerator(renderer);
       scene.environment = pmrem.fromEquirectangular(env).texture;
       if ('environmentIntensity' in scene) scene.environmentIntensity = 1.35;
       pmrem.dispose();
-
-      scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-      const key = new THREE.DirectionalLight(0xfff6e8, 1.6);
-      key.position.set(2.5, 3.5, 2);
-      scene.add(key);
-      const fill = new THREE.DirectionalLight(0xdde6ff, 0.7);
-      fill.position.set(-2.5, 1.5, -1.5);
-      scene.add(fill);
-      const rim = new THREE.DirectionalLight(0xffffff, 0.9);
-      rim.position.set(0, 1.2, -3);
-      scene.add(rim);
 
       set('Loading ring…');
       const gltf = await new GLTFLoader().loadAsync(MODEL);
@@ -189,13 +179,12 @@
       scene.add(root);
       root.updateMatrixWorld(true);
 
-      // This export ships no punctual lights — studio env + directionals light the metal.
-      let litSpots = 0;
+      // Never use file punctual lights in this preview.
       root.traverse((o) => {
         if (!o.isLight) return;
-        litSpots += 1;
         o.visible = false;
         o.intensity = 0;
+        if (o.parent) o.parent.remove(o);
       });
 
       const isGem = (o, m) =>
@@ -317,7 +306,7 @@
       }
 
       set(`${gemMeshes.length} stones · ${sparkled} sparkled · drag to orbit`);
-      console.log('[ringclose-draco]', { gems: gemMeshes.length, sparkled, litSpots, radius, center, size });
+      console.log('[ringclose-draco]', { gems: gemMeshes.length, sparkled, radius, center, size });
 
       addEventListener('resize', () => {
         camera.aspect = innerWidth / innerHeight;
