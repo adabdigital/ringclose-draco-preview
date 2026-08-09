@@ -31,7 +31,7 @@
   </script>
 </head>
 <body>
-  <div id="title">ringclose<small>Draco · diamond sparkle · drag to orbit</small></div>
+  <div id="title">ringclose<small>named · light · diamond sparkle · drag to orbit</small></div>
   <div id="status">Starting…</div>
   <script type="module">
     const el = document.getElementById('status');
@@ -316,7 +316,7 @@
         }
       }
 
-      set(`${gemMeshes.length} stones · ${sparkled} sparkled · Draco · drag to orbit`);
+      set(`${gemMeshes.length} stones · ${sparkled} sparkled · drag to orbit`);
       console.log('[ringclose-draco]', { gems: gemMeshes.length, sparkled, litSpots, radius, center, size });
 
       addEventListener('resize', () => {
